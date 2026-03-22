@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clinical Diagnostic Assistant</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+
+<div class="app">
+
+  <div class="nav">
+    <button onclick="showPage('patient')">Patient</button>
+    <button onclick="showPage('symptoms')">Symptoms</button>
+    <button onclick="showPage('matching')">Matching</button>
+    <button onclick="showPage('labs')">Lab Tests</button>
+    <button onclick="showPage('risk')">Risk & Care</button>
+    <button onclick="showPage('report')">Final Report</button>
+  </div>
+
+  <<header class="hero">
+  <div class="hero-left">
+    <div class="hero-icon">🧬</div>
+    <div>
+      <h1>Diagnostic Compass</h1>
+      <p class="hero-sub">Analysis From another perspective</p>
+    </div>
+  </div>
+</header>
+<div id="dbStatus" style="display:none;"></div>
+
+
+  <!-- PAGE 1 -->
+  <section class="page active" id="patientPage">
+    <div class="grid-two">
+      <div class="panel">
+        <div class="panel-title">👤 Patient Profile</div>
+        <div class="form-grid">
+          <input id="name" placeholder="Patient Name" />
+          <input id="age" placeholder="Age" />
+          <select id="gender">
+            <option value="">Gender</option>
+            <option>Male</option>
+            <option>Female</option>
+          </select>
+          <input id="caseID" placeholder="Case ID" />
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">🪪 Patient Card</div>
+        <div id="patientPreview" class="preview-card">
+          <div><strong>Name:</strong> —</div>
+          <div><strong>Age:</strong> —</div>
+          <div><strong>Gender:</strong> —</div>
+          <div><strong>Case ID:</strong> —</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-buttons">
+      <div></div>
+      <button onclick="showPage('symptoms')">Next → Symptoms</button>
+    </div>
+  </section>
+
+  <!-- PAGE 2 -->
+  <section class="page" id="symptomPage">
+    <div class="grid-two symptom-layout">
+
+      <div class="panel">
+        <div class="panel-title">🧍 Symptom Body Map</div>
+        <div class="body-map" id="bodyMapButtons"></div>
+        <div class="small-note" id="currentFilterText">Showing: All symptoms</div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">🩺 Symptoms</div>
+        <div id="symptomList" class="symptom-list"></div>
+      </div>
+
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">💡 Smart Clinical Hints</div>
+      <div id="suggestionsBox" class="suggestion-box">No suggestions yet. Select symptoms first.</div>
+    </div>
+
+    <div class="action-panel">
+      <button class="run-btn" onclick="runDiagnosis()">Run Diagnosis</button>
+      <button class="secondary-btn" onclick="resetSelections()">Reset Symptoms</button>
+    </div>
+
+    <div class="nav-buttons">
+      <button onclick="showPage('patient')">← Back</button>
+      <button onclick="showPage('matching')">Next → Matching</button>
+    </div>
+  </section>
+
+  <!-- PAGE 3 -->
+  <section class="page" id="matchingPage">
+
+    <div class="panel">
+      <div class="panel-title">📊 Top 3 Disease Matching</div>
+      <div id="results"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">🎓 Student Mode</div>
+      <input id="studentGuess" placeholder="Enter your diagnosis guess" />
+      <button onclick="checkStudentAnswer()">Check Answer</button>
+      <div id="studentResult" class="small-note" style="margin-top:10px;">No answer checked yet.</div>
+    </div>
+
+    <div class="nav-buttons">
+      <button onclick="showPage('symptoms')">← Back</button>
+      <button onclick="showPage('labs')">Next → Lab Tests</button>
+    </div>
+  </section>
+
+  <!-- PAGE 4 -->
+  <section class="page" id="labsPage">
+    <div class="panel">
+      <div class="panel-title">🧪 Lab Confirmation</div>
+      <div id="labInputs"></div>
+      <div id="labDecisionBox" class="final-report" style="margin-top:16px;">No lab-based decision yet.</div>
+    </div>
+
+    <div class="nav-buttons">
+      <button onclick="showPage('matching')">← Back</button>
+      <button onclick="evaluateLabDiagnosis()">Evaluate from Lab Results</button>
+    </div>
+  </section>
+
+  <!-- PAGE 5 -->
+  <section class="page" id="riskPage">
+    <div class="grid-two">
+      <div class="panel">
+        <div class="panel-title">☣️ Clinical Risk</div>
+
+        <div class="risk-panel">
+          <div class="meter-card">
+            <div class="meter-label">Contagiousness Level</div>
+            <div class="meter-track">
+              <div id="contagiousBar" class="meter-fill low" style="width:0%"></div>
+            </div>
+            <div id="contagiousText" class="meter-text">No result yet</div>
+          </div>
+
+          <div class="transmission-card">
+            <div class="transmission-title">Transmission Method</div>
+            <div id="transmissionText">—</div>
+            <div id="transmissionVisual" class="transmission-visual">🩺</div>
+          </div>
+
+          <div class="precaution-card">
+            <div class="transmission-title">Precautions / Care</div>
+            <div id="precautionText">—</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">🧠 Diagnostic Confidence</div>
+        <div class="confidence-box">
+          <div class="confidence-bar">
+            <div id="confidenceFill"></div>
+          </div>
+          <div id="confidenceText" class="small-note">No confidence score yet.</div>
+        </div>
+
+        <div class="panel-title" style="margin-top:18px;">🧾 Disease Card</div>
+        <div id="diseaseCard" class="disease-card">No disease card yet.</div>
+      </div>
+    </div>
+
+    <div class="grid-two">
+      <div class="panel">
+        <div class="panel-title">🦠 Disease Spread Map</div>
+        <div id="spreadMap" class="spread-map">No spread map yet.</div>
+
+        <div class="panel-title" style="margin-top:18px;">📈 Disease Progression Timeline</div>
+        <div id="progressTimeline" class="timeline"></div>
+        <button class="run-btn" onclick="playProgression()">▶ Play Progression</button>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">🛡 Immune / Marker Card</div>
+        <div id="immuneCard" class="immune-card">
+          <div class="immune-icon">🛡</div>
+          <div class="immune-text">No immune marker available yet.</div>
+        </div>
+
+        <div class="panel-title" style="margin-top:18px;">🧠 Differential Diagnosis</div>
+        <div id="diffBox" class="diff-box">No differential diagnosis yet.</div>
+      </div>
+    </div>
+
+    <div class="nav-buttons">
+      <button onclick="showPage('labs')">← Back</button>
+      <button onclick="generateReport()">Generate Final Report</button>
+    </div>
+  </section>
+
+  <!-- PAGE 6 -->
+  <section class="page" id="reportPage">
+    <div class="panel">
+      <div class="panel-title">📄 Final Clinical Report</div>
+      <div id="finalReport" class="final-report">No report generated yet.</div>
+    </div>
+
+    <div class="nav-buttons">
+      <button onclick="showPage('risk')">← Back</button>
+      <button onclick="window.print()">Print Report</button>
+    </div>
+  </section>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
