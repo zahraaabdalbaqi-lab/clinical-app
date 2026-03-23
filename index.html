@@ -20,7 +20,7 @@
     <button onclick="showPage('report')">Final Report</button>
   </div>
 
-  <<header class="hero">
+  <header class="hero">
   <div class="hero-left">
     <div class="hero-icon">🧬</div>
     <div>
@@ -133,8 +133,26 @@
       <button onclick="evaluateLabDiagnosis()">Evaluate from Lab Results</button>
     </div>
   </section>
+  
+  <!-- PAGE 5: LAB RESULT -->
+<section class="page" id="labResultPage">
 
-  <!-- PAGE 5 -->
+  <div class="panel">
+    <div class="panel-title">🧪 Lab-Based Diagnosis</div>
+
+    <div id="labResultContent">
+      No result yet.
+    </div>
+  </div>
+
+  <div class="action-panel">
+    <button class="secondary-btn" onclick="showPage('labs')">← Back</button>
+   <button class="run-btn" onclick="showRiskAndCare()">Next → Risk & Care</button>
+  </div>
+
+</section>
+
+  <!-- PAGE 6 -->
   <section class="page" id="riskPage">
     <div class="grid-two">
       <div class="panel">
@@ -199,12 +217,12 @@
     </div>
 
     <div class="nav-buttons">
-      <button onclick="showPage('labs')">← Back</button>
+      <button onclick="showPage('labResult')">← Back</button>
       <button onclick="generateReport()">Generate Final Report</button>
     </div>
   </section>
 
-  <!-- PAGE 6 -->
+  <!-- PAGE 7 -->
   <section class="page" id="reportPage">
     <div class="panel">
       <div class="panel-title">📄 Final Clinical Report</div>
